@@ -29,7 +29,6 @@ def snippet_detail(request, pk=None):
                     'data': serializer.data
                 }
             return JsonResponse(response, status=200)
-
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
 
@@ -48,27 +47,26 @@ def snippet_detail(request, pk=None):
                 return JsonResponse(response, status=200)
             else:
                 return JsonResponse({'message': serializer.errors}, status=422)
-
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
 
     elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        snippet = Snippet.objects.get(pk=pk)
+        try:
+            data = JSONParser().parse(request)
+            snippet = Snippet.objects.get(pk=pk)
 
-        if not snippet:
-            return JsonResponse(serializer.errors, status=400)
-
-        serializer = SnippetSerializer(snippet, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            response = {
-                'message': 'snippet updated successfully',
-                'data': serializer.data
-            }
-            return JsonResponse(response, status=200)
-        else:
-            return JsonResponse(serializer.errors, status=400)
+            serializer = SnippetSerializer(snippet, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                response = {
+                    'message': 'snippet updated successfully',
+                    'data': serializer.data
+                }
+                return JsonResponse(response, status=200)
+            else:
+                return JsonResponse(serializer.errors, status=400)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=400)
 
     elif request.method == 'DELETE':
         try:
@@ -77,3 +75,4 @@ def snippet_detail(request, pk=None):
             return JsonResponse({'message': 'snippet deleted'}, status=204)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=400)
+    
