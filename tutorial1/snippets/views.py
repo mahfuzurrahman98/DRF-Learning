@@ -76,3 +76,5 @@ def snippet_detail(request, pk=None):
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=400)
     
+    else:
+        return JsonResponse({'message': 'invalid request method'}, status=405)
