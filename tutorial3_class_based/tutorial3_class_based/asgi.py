@@ -1,5 +1,5 @@
 """
-ASGI config for tutorial3 project.
+ASGI config for tutorial3_class_based project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tutorial3.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tutorial3_class_based.settings')
 
 application = get_asgi_application()
