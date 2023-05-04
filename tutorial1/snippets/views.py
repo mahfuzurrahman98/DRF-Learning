@@ -11,16 +11,25 @@ def snippet_detail(request, pk=None):
     """
     List all code snippets, or create a new snippet.
     """
+    print('request method is', request.method)
     if request.method == 'GET':
         try:
             if pk:
                 snippet = Snippet.objects.get(pk=pk)
                 serializer = SnippetSerializer(snippet)
-                return JsonResponse(serializer.data, safe=False, status=200)
+                response = {
+                    'message': 'snippet retrieved successfully',
+                    'data': serializer.data
+                }
             else:
                 snippets = Snippet.objects.all()
                 serializer = SnippetSerializer(snippets, many=True)
-                return JsonResponse(serializer.data, safe=False, status=200)
+                response = {
+                    'message': 'snippets retrieved successfully',
+                    'data': serializer.data
+                }
+            return JsonResponse(response, status=200)
+
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
 
@@ -32,8 +41,13 @@ def snippet_detail(request, pk=None):
             serializer = SnippetSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            return JsonResponse(serializer.errors, status=422)
+                response = {
+                    'message': 'snippet created successfully',
+                    'data': serializer.data
+                }
+                return JsonResponse(response, status=200)
+            else:
+                return JsonResponse({'message': serializer.errors}, status=422)
 
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
@@ -48,15 +62,18 @@ def snippet_detail(request, pk=None):
         serializer = SnippetSerializer(snippet, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=200)
-        return JsonResponse(serializer.errors, status=400)
+            response = {
+                'message': 'snippet updated successfully',
+                'data': serializer.data
+            }
+            return JsonResponse(response, status=200)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        # return a simple message
-        # return JsonResponse({"message": "delete method not implemented", "id": pk }, status=400)
-
-        snippet = Snippet.objects.get(pk=pk)
-        if not snippet:
-            return JsonResponse(serializer.errors, status=422)
-        snippet.delete()
-        return HttpResponse(status=204)
+        try:
+            snippet = Snippet.objects.get(pk=pk)
+            snippet.delete()
+            return JsonResponse({'message': 'snippet deleted'}, status=204)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=400)
